@@ -3,11 +3,13 @@
 import Link from "next/link";
 import {fetchBoardDetail} from "../../../lib/api/board/board.api";
 import {useEffect, useState} from "react";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {BoardDetailResDto} from "../../../lib/api/board/board.types";
+import {deleteBoard} from "../../../lib/api/board/board.api";
 
 export default function DetailPage() {
 
+  const router = useRouter();
   const params = useParams<{ boardId: string }>();
   const [boardDetail, setBoardDetail] = useState<BoardDetailResDto>();
 
@@ -22,6 +24,11 @@ export default function DetailPage() {
 
     fetchData();
   }, []);
+
+  const handleDelete = async () => {
+    await deleteBoard(Number(params.boardId));
+    router.replace("/");
+  };
 
   return (
     <div className="site-shell">
@@ -40,16 +47,16 @@ export default function DetailPage() {
           <header className="detail-header">
             <h1>{ boardDetail?.title }</h1>
             <div className="post-meta">
-              <strong>{ boardDetail?.username }</strong><span> {boardDetail?.regDate.split(".")[0].replace("T", " ")} </span><span>조회 0</span>
+              <strong>{ boardDetail?.username }</strong><span> {boardDetail?.regDate.split(".")[0].replace("T", " ")} </span><span>조회 {boardDetail?.viewCount}</span>
             </div>
           </header>
           <div className="detail-body">
             <p>{ boardDetail?.content }</p>
           </div>
           <div className="detail-actions">
-            <button className="text-button" type="button">수정</button>
-            <button className="text-button danger" type="button">삭제</button>
-            <button className="answer-button" type="button">답변</button>
+            <Link className="text-button"  href={`/modify/${params.boardId}`}>수정</Link>
+            <button className="text-button danger" type="button" onClick={handleDelete}>삭제</button>
+            <Link className="answer-button" href={`/reply/${params.boardId}`}>답변</Link>
           </div>
         </article>
         <div className="page-actions"><Link className="secondary-button" href="/">목록으로</Link></div>

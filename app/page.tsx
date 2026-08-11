@@ -11,8 +11,14 @@ export default function Home() {
   const [totalCount, setTotalCount] = useState(0);
   const [boards, setBoards] = useState<BoardListResDto[]>([]);
 
+  const answeredQuestionIds = new Set(
+    boards
+      .filter((board) => board.parentId != null)
+      .map((board) => board.parentId)
+  );
+
   useEffect(() => {
-    const fetchData = async () => {
+    const replyData = async () => {
       const response = await fetchBoardList({
         curPage: 1,
         rowSize: 10,
@@ -24,7 +30,7 @@ export default function Home() {
       setTotalCount(response?.totalCount);
     };
 
-    fetchData();
+    replyData();
   }, []);
 
   return (
@@ -79,17 +85,44 @@ export default function Home() {
               <span>작성일</span>
               <span>조회</span>
             </div>
-            {boards?.map((board) => (
-              <article className="table-row post-row" key={board.boardId}>
-                <span className="post-number">{board.boardId}</span>
-                <div className="post-title">
-                  <Link href={`/detail/${board.boardId}`}>{board.title}</Link>
-                </div>
-                <span className="post-author">{board.username}</span>
-                <time dateTime={board.regDate}>{board.regDate.split(".")[0].replace("T", " ")}</time>
-                {/*<span className="post-views">{board.views}</span>*/}
-              </article>
-            ))}
+            {boards?.map((board, index) => {
+              const isReply = board.parentId != null;
+              const hasReplies = !isReply && answeredQuestionIds.has(board.boardId);
+              const groupId = board.parentId ?? board.boardId;
+              const nextBoard = boards[index + 1];
+              const nextGroupId = nextBoard
+                ? nextBoard.parentId ?? nextBoard.boardId
+                : null;
+              const isGroupEnd = groupId !== nextGroupId;
+
+              return (
+                <article
+                  className={`table-row post-row ${
+                    isReply ? "reply-row" : "question-row"
+                  } ${hasReplies ? "question-with-replies" : ""} ${
+                    isGroupEnd ? "group-end" : ""
+                  }`}
+                  key={board.boardId}
+                >
+                  <span className="post-number">{board.boardId}</span>
+                  <div className="post-title">
+                    <span className={`answer-status ${
+                      isReply
+                        ? "answer-status-reply"
+                        : hasReplies
+                          ? "answer-status-complete"
+                          : "answer-status-waiting"
+                    }`}>
+                      {isReply ? "답변" : hasReplies ? "답변완료" : "답변대기"}
+                    </span>
+                    <Link href={`/detail/${board.boardId}`}>{board.title}</Link>
+                  </div>
+                  <span className="post-author">{board.username}</span>
+                  <time dateTime={board.regDate}>{board.regDate.split(".")[0].replace("T", " ")}</time>
+                  <span className="post-views">{board.viewCount}</span>
+                </article>
+              );
+            })}
           </div>
 
           <nav className="pagination" aria-label="페이지 이동">

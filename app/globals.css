@@ -300,6 +300,52 @@ select {
   background: #fbfcff;
 }
 
+.question-row {
+  position: relative;
+  background: #fff;
+}
+
+.question-with-replies {
+  border-left: 3px solid #7ca5f8;
+  background: #fbfdff;
+}
+
+.reply-row {
+  position: relative;
+  min-height: 58px;
+  border-left: 3px solid #d6e3ff;
+  background: #f7faff;
+}
+
+.reply-row:hover {
+  background: #f1f6ff;
+}
+
+.reply-row .post-title {
+  position: relative;
+  padding-left: 28px;
+}
+
+.reply-row .post-title::before {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  color: #8ca9df;
+  font-size: 17px;
+  line-height: 1;
+  content: "↳";
+  transform: translateY(-55%);
+}
+
+.post-row.group-end {
+  border-bottom-color: #dfe5ef;
+}
+
+.post-row.group-end:not(:last-child) {
+  box-shadow: 0 7px 0 #f3f5f8;
+  margin-bottom: 7px;
+}
+
 .post-number,
 .post-author,
 .post-row time,
@@ -327,6 +373,31 @@ select {
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.answer-status {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.answer-status-waiting {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.answer-status-complete {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.answer-status-reply {
+  background: #eff6ff;
+  color: var(--primary-dark);
 }
 
 .pagination {
@@ -464,11 +535,17 @@ select {
 }
 
 .text-button {
+  display: inline-flex;
+  height: 34px;
   padding: 0;
   border: 0;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: #737b89;
+  font-family: inherit;
   font-size: 12px;
+  line-height: 1;
 }
 
 .text-button.danger {
@@ -479,12 +556,16 @@ select {
   height: 34px;
   margin-left: 5px;
   padding: 0 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 5px;
   background: var(--primary);
   color: #fff;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
 }
 
 .answer-button:hover {
