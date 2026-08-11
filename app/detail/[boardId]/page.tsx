@@ -1,28 +1,50 @@
+"use client"
+
 import Link from "next/link";
+import {fetchBoardDetail} from "../../../lib/api/board/board.api";
+import {useEffect, useState} from "react";
+import {useParams} from "next/navigation";
+import {BoardDetailResDto} from "../../../lib/api/board/board.types";
 
 export default function DetailPage() {
+
+  const params = useParams<{ boardId: string }>();
+  const [boardDetail, setBoardDetail] = useState<BoardDetailResDto>();
+
+  useEffect(() => {
+    const fetchData  = async() => {
+       const response = await fetchBoardDetail(Number(params.boardId));
+
+       console.log(response);
+
+       setBoardDetail(response.resultData);
+    }
+
+    fetchData();
+  }, []);
+
   return (
     <div className="site-shell">
       <header className="site-header">
         <div className="header-inner">
-          <Link className="brand" href="/" aria-label="Q&A 홈">Q&amp;A</Link>
+          <Link className="brand" href="/public" aria-label="Q&A 홈">Q&amp;A</Link>
           <nav className="main-nav" aria-label="주요 메뉴">
-            <Link className="active" href="/">게시판</Link>
+            <Link className="active" href="/public">게시판</Link>
           </nav>
         </div>
       </header>
 
       <main className="content-container">
-        <div className="breadcrumb"><Link href="/">게시판</Link><span>›</span><span>상세보기</span></div>
+        <div className="breadcrumb"><Link href="/public">게시판</Link><span>›</span><span>상세보기</span></div>
         <article className="detail-panel">
           <header className="detail-header">
-            <h1>게시글 제목</h1>
+            <h1>{ boardDetail?.title }</h1>
             <div className="post-meta">
-              <strong>작성자</strong><span>2026.08.10</span><span>조회 0</span>
+              <strong>{ boardDetail?.username }</strong><span> {boardDetail?.regDate.split(".")[0].replace("T", " ")} </span><span>조회 0</span>
             </div>
           </header>
           <div className="detail-body">
-            <p>게시글 내용이 표시되는 영역입니다.</p>
+            <p>{ boardDetail?.content }</p>
           </div>
           <div className="detail-actions">
             <button className="text-button" type="button">수정</button>

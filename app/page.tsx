@@ -1,14 +1,32 @@
-import Link from "next/link";
+"use client"
 
-const posts = [
-  { id: 8, title: "Next.js에서 환경 변수는 어떻게 설정하나요?", author: "김민수", date: "2026.08.09", views: 24 },
-  { id: 7, title: "게시글 수정 기능을 구현하고 싶어요", author: "이지은", date: "2026.08.08", views: 18 },
-  { id: 6, title: "처음 시작하는 분들을 위한 게시판 이용 안내", author: "관리자", date: "2026.08.07", views: 102 },
-  { id: 5, title: "React 컴포넌트 구조에 대해 질문드립니다", author: "박서준", date: "2026.08.06", views: 31 },
-  { id: 4, title: "반갑습니다. 오늘 가입했어요!", author: "최유진", date: "2026.08.05", views: 15 },
-];
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import { fetchBoardList} from "../lib/api/board/board.api";
+import {BoardListResDto} from "../lib/api/board/board.types";
 
 export default function Home() {
+
+  const [totalCount, setTotalCount] = useState(0);
+  const [boards, setBoards] = useState<BoardListResDto[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchBoardList({
+        curPage: 1,
+        rowSize: 10,
+      });
+
+      console.log(response);
+
+      setBoards(response?.resultData);
+      setTotalCount(response?.totalCount);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="site-shell">
       <header className="site-header">
@@ -35,7 +53,7 @@ export default function Home() {
 
         <section className="board-panel" aria-label="게시글 목록">
           <div className="board-toolbar">
-            <p>전체 <strong>8</strong>개</p>
+            <p>전체 <strong>{totalCount}</strong>개</p>
             <div className="search-form" role="search">
               <label className="sr-only" htmlFor="search-type">검색 기준</label>
               <select id="search-type" defaultValue="title" aria-label="검색 기준">
@@ -61,15 +79,15 @@ export default function Home() {
               <span>작성일</span>
               <span>조회</span>
             </div>
-            {posts.map((post) => (
-              <article className="table-row post-row" key={post.id}>
-                <span className="post-number">{post.id}</span>
+            {boards?.map((board) => (
+              <article className="table-row post-row" key={board.boardId}>
+                <span className="post-number">{board.boardId}</span>
                 <div className="post-title">
-                  <Link href="/detail">{post.title}</Link>
+                  <Link href={`/detail/${board.boardId}`}>{board.title}</Link>
                 </div>
-                <span className="post-author">{post.author}</span>
-                <time dateTime={post.date.replaceAll(".", "-")}>{post.date}</time>
-                <span className="post-views">{post.views}</span>
+                <span className="post-author">{board.username}</span>
+                <time dateTime={board.regDate}>{board.regDate.split(".")[0].replace("T", " ")}</time>
+                {/*<span className="post-views">{board.views}</span>*/}
               </article>
             ))}
           </div>

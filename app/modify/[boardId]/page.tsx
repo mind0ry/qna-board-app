@@ -1,16 +1,36 @@
 "use client"
 
 import Link from "next/link";
-import { useState } from "react";
-import {createBoard} from "../../lib/api/board/board.api";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import {modifyBoard, fetchBoardDetail} from "../../../lib/api/board/board.api";
+import {useParams, useRouter} from "next/navigation";
+import {BoardDetailResDto} from "@/lib/api/board/board.types";
 
-export default function CreatePage() {
+export default function ModifyPage() {
+
+  const params = useParams<{boardId : string}>();
+  const [boardDetail, setBoardDetail] = useState<BoardDetailResDto>();
 
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+
+  useEffect(() => {
+    const fetchData = async() => {
+      const response = await fetchBoardDetail(Number(params.boardId));
+
+      setBoardDetail(response?.resultData);
+
+      setUsername(response?.username);
+      setTitle(response?.title);
+      setContent(response?.content);
+    }
+
+    fetchData();
+  }, []);
+
+
 
   const handleSubmit = async () => {
 
@@ -19,7 +39,7 @@ export default function CreatePage() {
     formData.append("title", title.trim());
     formData.append("content", content.trim());
 
-    await createBoard(formData);
+    await modifyBoard(formData);
 
     router.replace("/");
   }
@@ -36,10 +56,10 @@ export default function CreatePage() {
       </header>
 
       <main className="content-container write-container">
-        <div className="breadcrumb"><Link href="/">게시판</Link><span>›</span><span>글쓰기</span></div>
+        <div className="breadcrumb"><Link href="/">게시판</Link><span>›</span><span>수정하기</span></div>
         <section className="form-heading">
-          <p className="eyebrow">NEW POST</p>
-          <h1>새 글 작성</h1>
+          <p className="eyebrow">수정</p>
+          <h1>게시글 수정</h1>
         </section>
         <div className="write-panel">
           <div className="form-field compact-field">
@@ -56,7 +76,7 @@ export default function CreatePage() {
           </div>
           <div className="form-actions">
             <Link className="secondary-button" href="/">취소</Link>
-            <button className="primary-button" type="button" onClick={handleSubmit}>등록하기</button>
+            <button className="primary-button" type="button" onClick={handleSubmit}>수정하기</button>
           </div>
         </div>
       </main>
