@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {createBoard} from "../../lib/api/board/board.api";
+import {createBoard} from "@/lib/api/board/board.api";
 import { useRouter } from "next/navigation";
+import AttachmentUploader from "../../components/AttachmentUploader";
 
 export default function CreatePage() {
 
@@ -28,15 +29,15 @@ export default function CreatePage() {
     <div className="site-shell">
       <header className="site-header">
         <div className="header-inner">
-          <Link className="brand" href="/" aria-label="Q&A 홈">Q&amp;A</Link>
+          <Link className="brand" href="/public" aria-label="Q&A 홈">Q&amp;A</Link>
           <nav className="main-nav" aria-label="주요 메뉴">
-            <Link className="active" href="/">게시판</Link>
+            <Link className="active" href="/public">게시판</Link>
           </nav>
         </div>
       </header>
 
       <main className="content-container write-container">
-        <div className="breadcrumb"><Link href="/">게시판</Link><span>›</span><span>글쓰기</span></div>
+        <div className="breadcrumb"><Link href="/public">게시판</Link><span>›</span><span>글쓰기</span></div>
         <section className="form-heading">
           <p className="eyebrow">NEW POST</p>
           <h1>새 글 작성</h1>
@@ -54,8 +55,9 @@ export default function CreatePage() {
             <label htmlFor="content">내용 <span>*</span></label>
             <textarea id="content" placeholder="내용을 입력하세요" rows={14} value={content} onChange={e => setContent(e.target.value)} />
           </div>
+          <AttachmentUploader />
           <div className="form-actions">
-            <Link className="secondary-button" href="/">취소</Link>
+            <Link className="secondary-button" href="/public">취소</Link>
             <button className="primary-button" type="button" onClick={handleSubmit}>등록하기</button>
           </div>
         </div>

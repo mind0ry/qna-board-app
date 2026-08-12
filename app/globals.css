@@ -693,6 +693,127 @@ select {
   gap: 8px;
 }
 
+.attachment-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+}
+
+.attachment-picker input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.file-select-button,
+.download-button {
+  border: 1px solid #d7dce3;
+  border-radius: 8px;
+  background: #fff;
+  color: #273142;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.file-select-button {
+  padding: 10px 16px;
+}
+
+.attachment-picker > span,
+.attachment-help,
+.file-size,
+.download-file-list small {
+  color: #7a8494;
+  font-size: 13px;
+}
+
+.attachment-help {
+  margin: 6px 0 0;
+}
+
+.selected-file-list,
+.download-file-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.selected-file-list li,
+.download-file-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.selected-file-list li:last-child,
+.download-file-list li:last-child {
+  border-bottom: 0;
+}
+
+.file-name,
+.download-file-list li > span {
+  min-width: 0;
+  flex: 1;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-file-list button {
+  border: 0;
+  background: transparent;
+  color: #d44848;
+  cursor: pointer;
+}
+
+.detail-attachments {
+  padding: 22px 32px;
+  border-top: 1px solid #eceff3;
+}
+
+.attachment-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attachment-title-row h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.attachment-title-row span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.download-file-list li > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.download-button {
+  padding: 8px 12px;
+}
+
+.file-select-button:hover,
+.download-button:hover {
+  background: #f7f8fa;
+}
+
 @media (max-width: 720px) {
   .site-header {
     height: 60px;

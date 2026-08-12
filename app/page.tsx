@@ -51,7 +51,7 @@ export default function Home() {
             <h1>질문 게시판</h1>
             <p className="description">궁금한 내용을 자유롭게 묻고 답해보세요.</p>
           </div>
-          <Link className="write-button" href="/create">
+          <Link className="write-button" href="/board/create">
             <span aria-hidden="true">＋</span>
             글쓰기
           </Link>
@@ -115,7 +115,7 @@ export default function Home() {
                     }`}>
                       {isReply ? "답변" : hasReplies ? "답변완료" : "답변대기"}
                     </span>
-                    <Link href={`/detail/${board.boardId}`}>{board.title}</Link>
+                    <Link href={`/board/detail/${board.boardId}`}>{board.title}</Link>
                   </div>
                   <span className="post-author">{board.username}</span>
                   <time dateTime={board.regDate}>{board.regDate.split(".")[0].replace("T", " ")}</time>

@@ -21,6 +21,7 @@ export interface BoardListResDto extends Record<string, unknown> {
 // 게시글 상세 (BoardDetailResDto)
 export interface BoardDetailResDto extends Record<string, unknown> {
     boardId: number;
+    parentId: number | null;
     title: string;
     content: string;
     username: string;

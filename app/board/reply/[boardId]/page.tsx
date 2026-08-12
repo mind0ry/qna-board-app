@@ -1,33 +1,20 @@
 "use client"
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import {modifyBoard, fetchBoardDetail, fetchBoardDetailModify} from "../../../lib/api/board/board.api";
+import { useState } from "react";
+import {replyBoard} from "@/lib/api/board/board.api";
 import {useParams, useRouter} from "next/navigation";
-import {BoardDetailResDto} from "@/lib/api/board/board.types";
+import AttachmentUploader from "../../../components/AttachmentUploader";
 
-export default function ModifyPage() {
+export default function ReplyPage() {
 
   const params = useParams<{boardId : string}>();
-
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  useEffect(() => {
-    const ModifyData = async() => {
-      const response = await fetchBoardDetailModify(Number(params.boardId));
 
-      const data = response?.resultData
-
-      setUsername(data?.username ?? "");
-      setTitle(data?.title ?? "");
-      setContent(data?.content ?? "");
-    }
-
-    ModifyData();
-  }, []);
 
   const handleSubmit = async () => {
 
@@ -35,31 +22,28 @@ export default function ModifyPage() {
     formData.append("username", username.trim());
     formData.append("title", title.trim());
     formData.append("content", content.trim());
+    formData.append("parentId", params.boardId);
 
-    await modifyBoard(Number(params.boardId), formData);
+    await replyBoard(Number(params.boardId), formData);
 
     router.replace("/");
-  }
-
-  const handleBack = () => {
-    router.back();
   }
 
   return (
     <div className="site-shell">
       <header className="site-header">
         <div className="header-inner">
-          <Link className="brand" href="/" aria-label="Q&A 홈">Q&amp;A</Link>
+          <Link className="brand" href="/public" aria-label="Q&A 홈">Q&amp;A</Link>
           <nav className="main-nav" aria-label="주요 메뉴">
-            <Link className="active" href="/">게시판</Link>
+            <Link className="active" href="/public">게시판</Link>
           </nav>
         </div>
       </header>
 
       <main className="content-container write-container">
-        <div className="breadcrumb"><Link href="/">게시판</Link><span>›</span><span>수정하기</span></div>
+        <div className="breadcrumb"><Link href="/public">게시판</Link><span>›</span><span>답변하기</span></div>
         <section className="form-heading">
-          <h1>게시글 수정</h1>
+          <h1>답변</h1>
         </section>
         <div className="write-panel">
           <div className="form-field compact-field">
@@ -74,9 +58,10 @@ export default function ModifyPage() {
             <label htmlFor="content">내용 <span>*</span></label>
             <textarea id="content" placeholder="내용을 입력하세요" rows={14} value={content} onChange={e => setContent(e.target.value)} />
           </div>
+          <AttachmentUploader />
           <div className="form-actions">
-            <button className="secondary-button" onClick={handleBack}>취소</button>
-            <button className="primary-button" type="button" onClick={handleSubmit}>수정하기</button>
+            <Link className="secondary-button" href="/public">취소</Link>
+            <button className="primary-button" type="button" onClick={handleSubmit}>답변하기</button>
           </div>
         </div>
       </main>
