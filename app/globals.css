@@ -300,6 +300,17 @@ select {
   background: #fbfcff;
 }
 
+.board-message {
+  margin: 0;
+  padding: 48px 20px;
+  color: #858c99;
+  text-align: center;
+}
+
+.board-error {
+  color: #dc2626;
+}
+
 .question-row {
   position: relative;
   background: #fff;
@@ -422,7 +433,8 @@ select {
 }
 
 .pagination a:hover,
-.pagination a.current {
+.pagination a.current,
+.pagination button.current {
   border-color: var(--primary);
   background: var(--primary);
   color: #fff;
@@ -807,11 +819,50 @@ select {
 
 .download-button {
   padding: 8px 12px;
+  text-decoration: none;
 }
 
 .file-select-button:hover,
 .download-button:hover {
   background: #f7f8fa;
+}
+
+.alert-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.alert-popup {
+  width: min(100%, 380px);
+  padding: 28px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.alert-popup h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.alert-popup p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.alert-popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
 }
 
 @media (max-width: 720px) {

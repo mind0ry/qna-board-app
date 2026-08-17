@@ -1,37 +1,39 @@
-import {
-    BoardListParams, CreateBoardReqDto, ModifyBoardReqDto, BoardDetailResDto, BoardListResDto
-} from "./board.types";
+import {BoardDetailResponse, BoardListParams, BoardListResponse} from "./board.types";
+
+export const BOARD_API_URL = "http://localhost:8080/apis/board";
 
 // 게시글 목록 조회
-export async function fetchBoardList(params: BoardListParams) {
-    try {
-        const response = await fetch("http://localhost:8080/apis/board")
-        if (!response.ok) {
-            throw new Error(`게시글 목록 조회 실패: ${response.status} ${response.statusText}`);
+export async function fetchBoardList(params: BoardListParams): Promise<BoardListResponse> {
+    const searchParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+            searchParams.set(key, String(value));
         }
-        return await response.json();
-    } catch (error) {
-        console.log(error);
+    });
+
+    const response = await fetch(`${BOARD_API_URL}?${searchParams.toString()}`);
+    if (!response.ok) {
+        throw new Error(`게시글 목록 조회 실패: ${response.status} ${response.statusText}`);
     }
+
+    return response.json();
 }
 
 // 게시글 상세
-export async function fetchBoardDetail(boardId: number) {
-    try {
-        const response = await fetch(`http://localhost:8080/apis/board/detail/${boardId}`)
-        if (!response.ok) {
-            throw new Error(`게시글 상세 조회 실패: ${response.status} ${response.statusText}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.log(error);
+export async function fetchBoardDetail(boardId: number): Promise<BoardDetailResponse> {
+    const response = await fetch(`${BOARD_API_URL}/detail/${boardId}`);
+    if (!response.ok) {
+        throw new Error(`게시글 상세 조회 실패: ${response.status} ${response.statusText}`);
     }
+
+    return response.json();
 }
 
 // 게시글 등록
 export async function createBoard(formData: FormData) {
 
-    const response = await fetch("http://localhost:8080/apis/board/create", {
+    const response = await fetch(`${BOARD_API_URL}/create`, {
         method: "POST",
         body: formData
     }).catch(error => {
@@ -46,7 +48,7 @@ export async function createBoard(formData: FormData) {
 // 수정 시 게시글 내용 가져오기
 export async function fetchBoardDetailModify(boardId: number) {
     try {
-        const response = await fetch(`http://localhost:8080/apis/board/detail/${boardId}/modify`)
+        const response = await fetch(`${BOARD_API_URL}/detail/${boardId}/modify`)
         if (!response.ok) {
             throw new Error(`게시글 내용 조회 실패: ${response.status} ${response.statusText}`);
         }
@@ -59,7 +61,7 @@ export async function fetchBoardDetailModify(boardId: number) {
 // 게시글 수정
 export async function modifyBoard(boardId: number, formData: FormData) {
 
-    const response = await fetch(`http://localhost:8080/apis/board/${boardId}/modify`, {
+    const response = await fetch(`${BOARD_API_URL}/${boardId}/modify`, {
         method: "POST",
         body: formData
     }).catch(error => {
@@ -73,7 +75,7 @@ export async function modifyBoard(boardId: number, formData: FormData) {
 
 // 게시글 삭제
 export async function deleteBoard(boardId: number) {
-    const response = await fetch(`http://localhost:8080/apis/board/${boardId}/delete`, {
+    const response = await fetch(`${BOARD_API_URL}${boardId}/delete`, {
         method: "POST"
     }).catch(error => {
         throw new Error(error);
@@ -87,7 +89,7 @@ export async function deleteBoard(boardId: number) {
 // 게시글 답변
 export async function replyBoard(patentId: number, formData: FormData) {
 
-    const response = await fetch(`http://localhost:8080/apis/board/${patentId}/reply`, {
+    const response = await fetch(`${BOARD_API_URL}/${patentId}/reply`, {
         method: "POST",
         body: formData
     }).catch(error => {

@@ -28,6 +28,30 @@ export interface BoardDetailResDto extends Record<string, unknown> {
     regDate: string;
     updDate?: string;
     viewCount: number;
+    files: BoardFileResDto[];
+}
+
+export interface PagingData {
+    curPage: number;
+    rowSize: number;
+    totalCount: number;
+    totalPage: number;
+}
+
+export interface BoardListResponse {
+    resultData: BoardListResDto[];
+    totalCount: number;
+    pagingData?: PagingData;
+}
+
+export interface BoardDetailResponse {
+    resultData: BoardDetailResDto;
+}
+
+export interface BoardFileResDto {
+    fileSeq: number;
+    fileNm: string;
+    fileSize: number;
 }
 
 // 게시글 등록 (CreateBoardReqDto)

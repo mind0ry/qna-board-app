@@ -1,15 +1,25 @@
 "use client"
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
-import { fetchBoardList} from "../lib/api/board/board.api";
-import {BoardListResDto} from "../lib/api/board/board.types";
+import { fetchBoardList } from "../lib/api/board/board.api";
+import { BoardListResDto } from "../lib/api/board/board.types";
 
 export default function Home() {
-
+  const rowSize = 10;
   const [totalCount, setTotalCount] = useState(0);
   const [boards, setBoards] = useState<BoardListResDto[]>([]);
+  const [curPage, setCurPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(0);
+  const [searchType, setSearchType] = useState<"title" | "username">("title");
+  const [keyword, setKeyword] = useState("");
+  const [search, setSearch] = useState({
+    searchType: "title" as "title" | "username",
+    keyword: "",
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const answeredQuestionIds = new Set(
     boards
@@ -18,20 +28,53 @@ export default function Home() {
   );
 
   useEffect(() => {
+    let isCurrent = true;
+
     const replyData = async () => {
-      const response = await fetchBoardList({
-        curPage: 1,
-        rowSize: 10,
-      });
+      setIsLoading(true);
+      setError("");
 
-      console.log(response);
+      try {
+        const response = await fetchBoardList({
+          isPaging: true,
+          curPage,
+          rowSize,
+          searchType: search.searchType,
+          keyword: search.keyword,
+        });
 
-      setBoards(response?.resultData);
-      setTotalCount(response?.totalCount);
+        if (!isCurrent) return;
+        setBoards(response.resultData ?? []);
+        setTotalCount(response.totalCount ?? 0);
+        setTotalPage(response.pagingData?.totalPage ?? 0);
+      } catch {
+        if (!isCurrent) return;
+        setBoards([]);
+        setTotalCount(0);
+        setTotalPage(0);
+        setError("게시글 목록을 불러오지 못했습니다.");
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
     };
 
     replyData();
-  }, []);
+    return () => {
+      isCurrent = false;
+    };
+  }, [curPage, search]);
+
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCurPage(1);
+    setSearch({ searchType, keyword: keyword.trim() });
+  };
+
+  const pageGroupStart = Math.floor((curPage - 1) / 5) * 5 + 1;
+  const pages = Array.from(
+    { length: Math.max(0, Math.min(5, totalPage - pageGroupStart + 1)) },
+    (_, index) => pageGroupStart + index,
+  );
 
   return (
     <div className="site-shell">
@@ -60,21 +103,32 @@ export default function Home() {
         <section className="board-panel" aria-label="게시글 목록">
           <div className="board-toolbar">
             <p>전체 <strong>{totalCount}</strong>개</p>
-            <div className="search-form" role="search">
+            <form className="search-form" role="search" onSubmit={handleSearch}>
               <label className="sr-only" htmlFor="search-type">검색 기준</label>
-              <select id="search-type" defaultValue="title" aria-label="검색 기준">
+              <select
+                id="search-type"
+                value={searchType}
+                onChange={(event) => setSearchType(event.target.value as "title" | "username")}
+                aria-label="검색 기준"
+              >
                 <option value="title">제목</option>
-                <option value="author">작성자</option>
+                <option value="username">작성자</option>
               </select>
               <label className="sr-only" htmlFor="search">게시글 검색</label>
-              <input id="search" type="search" placeholder="검색어를 입력하세요" />
-              <button type="button" aria-label="검색">
+              <input
+                id="search"
+                type="search"
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                placeholder="검색어를 입력하세요"
+              />
+              <button type="submit" aria-label="검색">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="11" cy="11" r="6.5" />
                   <path d="m16 16 4 4" />
                 </svg>
               </button>
-            </div>
+            </form>
           </div>
 
           <div className="post-table">
@@ -85,7 +139,12 @@ export default function Home() {
               <span>작성일</span>
               <span>조회</span>
             </div>
-            {boards?.map((board, index) => {
+            {!isLoading && !error && boards.length === 0 && (
+              <p className="board-message">검색 결과가 없습니다.</p>
+            )}
+            {isLoading && <p className="board-message">불러오는 중...</p>}
+            {error && <p className="board-message board-error">{error}</p>}
+            {!isLoading && !error && boards.map((board, index) => {
               const isReply = board.parentId != null;
               const hasReplies = !isReply && answeredQuestionIds.has(board.boardId);
               const groupId = board.parentId ?? board.boardId;
@@ -126,10 +185,28 @@ export default function Home() {
           </div>
 
           <nav className="pagination" aria-label="페이지 이동">
-            <button type="button" aria-label="이전 페이지" disabled>‹</button>
-            <a className="current" href="#page-1" aria-current="page">1</a>
-            <a href="#page-2">2</a>
-            <button type="button" aria-label="다음 페이지">›</button>
+            <button
+              type="button"
+              aria-label="이전 페이지"
+              onClick={() => setCurPage((page) => Math.max(1, page - 1))}
+              disabled={curPage <= 1 || isLoading}
+            >‹</button>
+            {pages.map((page) => (
+              <button
+                type="button"
+                className={page === curPage ? "current" : undefined}
+                aria-current={page === curPage ? "page" : undefined}
+                onClick={() => setCurPage(page)}
+                disabled={isLoading}
+                key={page}
+              >{page}</button>
+            ))}
+            <button
+              type="button"
+              aria-label="다음 페이지"
+              onClick={() => setCurPage((page) => Math.min(totalPage, page + 1))}
+              disabled={curPage >= totalPage || isLoading}
+            >›</button>
           </nav>
         </section>
       </main>
