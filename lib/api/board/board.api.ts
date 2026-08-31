@@ -1,6 +1,6 @@
 import {BoardDetailResponse, BoardListParams, BoardListResponse} from "./board.types";
 
-export const BOARD_API_URL = "http://localhost:8080/apis/board";
+export const BOARD_API_URL = "http://192.168.53.129:8080/apis/board";
 
 // 게시글 목록 조회
 export async function fetchBoardList(params: BoardListParams): Promise<BoardListResponse> {
